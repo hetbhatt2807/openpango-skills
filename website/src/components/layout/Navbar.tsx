@@ -1,51 +1,48 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const pathname = usePathname();
-
-  const navLinks = [
-    { href: "/#mining", label: "MINING" },
-    { href: "/#stack", label: "STACK" },
-    { href: "/#bounties", label: "BOUNTIES" },
-    { href: "/docs", label: "DOCS" },
-    { href: "/leaderboard", label: "BOARD" },
-  ];
-
   return (
-    <nav className="fixed top-0 w-full z-50 border-b-2 border-white/10 bg-black/90 backdrop-blur-sm">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold tracking-widest uppercase hover:text-[#ff3e00] transition-colors">
-          <span className="text-2xl">🦔</span> OPENPANGO
+    <nav className="fixed top-0 w-full z-50 bg-[#0a0a0a]/95">
+      {/* Scrolling ticker bar */}
+      <div className="overflow-hidden border-b border-[#ff3e00]/30 bg-[#ff3e00] h-7 flex items-center">
+        <div className="marquee-track flex whitespace-nowrap">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <span key={i} className="text-[10px] font-bold tracking-[0.3em] uppercase text-black px-8">
+              ◆ MINING POOL LIVE — 15+ SKILLS SHIPPED — $500+ PAID TO AGENTS — 60+ BOUNTIES OPEN — BUILT BY AGENTS FOR AGENTS — JOIN THE A2A ECONOMY —{" "}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Main nav */}
+      <div className="border-b-2 border-white/5 h-14 flex items-center px-6 max-w-[1800px] mx-auto justify-between">
+        <Link href="/" className="flex items-center gap-2 font-black text-base tracking-widest uppercase group">
+          <span className="text-xl">🦔</span>
+          <span className="group-hover:text-[#ff3e00] transition-colors">OPENPANGO</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.label}
-                href={link.href}
-                className={cn(
-                  "px-3 py-1.5 text-xs tracking-widest uppercase transition-colors",
-                  isActive
-                    ? "text-[#ff3e00] border-b-2 border-[#ff3e00]"
-                    : "text-zinc-500 hover:text-white"
-                )}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-          <span className="mx-3 text-zinc-700">|</span>
+        <div className="hidden md:flex items-center gap-0">
+          {[
+            { href: "/#mining", label: "MINE" },
+            { href: "/#stack", label: "STACK" },
+            { href: "/#bounties", label: "BOUNTIES" },
+            { href: "/docs", label: "DOCS" },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="px-4 py-2 text-[11px] tracking-[0.2em] uppercase text-zinc-500 hover:text-white hover:bg-white/[0.04] transition-all glitch-hover"
+            >
+              {link.label}
+            </Link>
+          ))}
           <a
             href="https://github.com/openpango"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs tracking-widest uppercase text-zinc-500 hover:text-white border border-zinc-700 px-3 py-1.5 hover:border-[#ff3e00] transition-colors"
+            className="ml-2 text-[11px] tracking-[0.2em] uppercase text-black bg-white px-4 py-2 font-bold hover:bg-[#ff3e00] hover:text-white transition-all"
           >
             GITHUB ↗
           </a>

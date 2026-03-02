@@ -16,13 +16,13 @@ export function Button({
   href,
   ...props
 }: ButtonProps) {
-  const base = "relative font-bold text-xs tracking-[0.15em] uppercase transition-all inline-flex items-center justify-center gap-2";
+  const base = "relative font-bold text-[11px] tracking-[0.2em] uppercase transition-all inline-flex items-center justify-center gap-2 group overflow-hidden";
 
   const variants = {
-    primary: "bg-[#ff3e00] text-white shadow-[4px_4px_0_rgba(255,255,255,0.15)] hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0_#ff3e00]",
-    secondary: "bg-white text-black shadow-[4px_4px_0_#ff3e00] hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[6px_6px_0_#ff3e00]",
-    outline: "border-2 border-zinc-700 text-zinc-300 hover:border-[#ff3e00] hover:text-[#ff3e00]",
-    ghost: "text-zinc-500 hover:text-white",
+    primary: "bg-[#ff3e00] text-white shadow-[5px_5px_0_rgba(255,255,255,0.12)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0_#ff3e00]",
+    secondary: "bg-white text-black shadow-[5px_5px_0_#ff3e00] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0_#ff3e00]",
+    outline: "border-2 border-zinc-700 text-zinc-400 hover:border-[#ff3e00] hover:text-[#ff3e00] hover:shadow-[5px_5px_0_#ff3e00] hover:-translate-y-1 hover:-translate-x-1",
+    ghost: "text-zinc-500 hover:text-white hover:bg-white/5",
   };
 
   const sizes = {
