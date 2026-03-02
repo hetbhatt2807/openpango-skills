@@ -118,7 +118,7 @@ const scanSkillSecurity = (skillSrcDir) => {
     if (lstat.isSymbolicLink()) {
       violations.push('[SYMLINK] Skill source directory is itself a symlink — possible path traversal attack');
     }
-  } catch (_) {}
+  } catch (_) { }
 
   return { passed: violations.length === 0, violations };
 };
@@ -205,7 +205,7 @@ const status = () => {
     let linkTarget = null;
     try {
       linkTarget = fs.realpathSync(destDir);
-    } catch (_) {}
+    } catch (_) { }
     const targetExists = linkTarget && fs.existsSync(linkTarget);
     console.log(`  - ${skill}: ${isValid && targetExists ? 'OK' : 'Broken'}`);
   });
@@ -337,8 +337,7 @@ const sandboxTestSkill = (skillSrcDir) => {
     "  }",
     "  return r;",
     "};",
-  ].join("
-");
+  ].join("\\n");
 
   const shimPath = path.join(os.tmpdir(), `felix-sandbox-${Date.now()}.js`);
   try {
@@ -352,14 +351,13 @@ const sandboxTestSkill = (skillSrcDir) => {
   } catch (err) {
     const msg = String(err.stderr || '') + String(err.message || '');
     if (msg.includes('[SANDBOX]')) {
-      const m = msg.match(/\[SANDBOX\][^
-]+/);
+      const m = msg.match(/\[SANDBOX\][^\n]+/);
       violations.push(m ? m[0] : '[SANDBOX] violation detected');
     } else if (err.killed) {
       violations.push('[SANDBOX] Execution timeout (>5s)');
     }
   } finally {
-    try { fs.unlinkSync(shimPath); } catch (_) {}
+    try { fs.unlinkSync(shimPath); } catch (_) { }
   }
 
   return { passed: violations.length === 0, violations };

@@ -49,11 +49,11 @@ skills.forEach(skill => {
     overallPassed = false;
     report += `### \`${skill}\` — ❌ FAILED\n`;
     report += `| Severity | Violation |\n|---|---|\n`;
-    allViolations.forEach(v => {
+    result.violations.forEach(v => {
       // WHY: Derive a rough severity tag from the violation category prefix.
       const severity = v.startsWith('[CVE]') ? '🔴 HIGH/CRITICAL' :
-                       v.startsWith('[SYMLINK]') ? '🔴 CRITICAL' :
-                       v.startsWith('[SANDBOX]') ? '🔴 CRITICAL' : '🟠 MEDIUM';
+        v.startsWith('[SYMLINK]') ? '🔴 CRITICAL' :
+          v.startsWith('[SANDBOX]') ? '🔴 CRITICAL' : '🟠 MEDIUM';
       report += `| ${severity} | ${v.replace(/^\[\w+\]\s*/, '')} |\n`;
     });
     report += `\n> ❌ **Installation blocked.** A maintainer must review and either fix the violations or explicitly approve with justification.\n\n`;
