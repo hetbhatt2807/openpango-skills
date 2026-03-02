@@ -1,0 +1,42 @@
+import unittest
+from enclave_runner import EnclaveRunner, SandboxPolicy
+
+class TestEnclaveRunner(unittest.TestCase):
+    def setUp(self):
+        self.sandbox = EnclaveRunner()
+
+    def test_benign_code(self):
+        code = "print('I am a harmless calculation: 2 + 2 =', 2+2)"
+        res = self.sandbox.execute(code)
+        
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["exit_code"], 0)
+        self.assertIn("4", res["stdout"])
+
+    def test_environment_stripping(self):
+        # The environment should be empty
+        malicious = "import os; print(os.environ.get('SECRET_API_KEY', 'not-found'))"
+        res = self.sandbox.execute(malicious)
+        
+        self.assertEqual(res["status"], "success")
+        self.assertIn("not-found", res["stdout"])
+
+    def test_file_system_jail(self):
+        # Attempt to read outside the temporary sandbox directory
+        malicious = "with open('/etc/passwd', 'r') as f:\n    print(f.read())"
+        res = self.sandbox.execute(malicious)
+        
+        self.assertEqual(res["status"], "error")
+        self.assertIn("sandbox", res["stderr"])
+        self.assertIn("Policy Violation", res["stderr"])
+
+    def test_timeout_policy(self):
+        # A runaway infinite loop should be killed
+        malicious = "while True:\n    pass"
+        res = self.sandbox.execute(malicious, timeout_seconds=1)
+        
+        self.assertEqual(res["status"], "timeout")
+        self.assertIn("timed out", res["stderr"])
+
+if __name__ == '__main__':
+    unittest.main()
