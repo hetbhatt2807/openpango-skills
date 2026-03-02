@@ -23,13 +23,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark scroll-smooth">
-      <body className={`${inter.variable} ${jbMono.variable} font-sans bg-[#09090b] text-zinc-200 antialiased`}>
-        <div className="flex flex-col min-h-screen relative">
+      <body className={`${inter.variable} ${jbMono.variable} font-sans bg-black text-zinc-200 antialiased`}>
+        <div className="flex flex-col min-h-screen">
           <Navbar />
           <div className="flex-grow">{children}</div>
           <Footer />

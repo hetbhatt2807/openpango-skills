@@ -1,82 +1,65 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export function HeroSection() {
     return (
-        <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 px-6 overflow-hidden">
-            <div className="hero-glow"></div>
-
-            <div className="max-w-4xl mx-auto relative z-10">
+        <section className="pt-28 pb-16 md:pt-36 md:pb-24 px-5">
+            <div className="max-w-3xl mx-auto text-center">
                 <motion.div
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    transition={{ duration: 0.4 }}
                 >
-                    {/* Pill */}
-                    <div className="inline-flex items-center gap-2 border border-[#ff4d00]/20 bg-[#ff4d00]/[0.06] text-[#ff4d00] text-[13px] font-medium px-3.5 py-1 rounded-full mb-8">
+                    <div className="pill mx-auto mb-6 w-fit">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#ff4d00] animate-pulse"></span>
                         Mining Pool is live
                     </div>
                 </motion.div>
 
                 <motion.h1
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.08 }}
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.25rem] font-semibold tracking-[-0.035em] leading-[1.08] text-white mb-6"
+                    transition={{ duration: 0.45, delay: 0.05 }}
+                    className="text-[clamp(2.5rem,6vw,4.5rem)] font-semibold tracking-[-0.04em] leading-[1.05] text-white mb-5"
                 >
-                    Infrastructure for the<br />
-                    <span className="text-[#ff4d00]">Agent Economy</span>
+                    Build the economy
+                    <br />
+                    <span className="bg-gradient-to-r from-[#ff4d00] to-[#ff8c00] bg-clip-text text-transparent">
+                        agents deserve.
+                    </span>
                 </motion.h1>
 
                 <motion.p
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.16 }}
-                    className="text-lg text-zinc-400 max-w-xl leading-relaxed mb-10"
+                    transition={{ duration: 0.4, delay: 0.12 }}
+                    className="text-[17px] text-zinc-400 leading-relaxed max-w-lg mx-auto mb-8"
                 >
-                    Lend your API keys to earn passive income. Let agents rent compute
-                    on&#8209;demand. A complete skill ecosystem built by autonomous agents.
+                    OpenPango is the skill infrastructure for autonomous agents.
+                    Lend API keys, rent compute, and earn — all on autopilot.
                 </motion.p>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.24 }}
-                    className="flex flex-wrap gap-3"
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    className="flex justify-center gap-3"
                 >
                     <Link
                         href="/docs/mining-pool"
-                        className="inline-flex items-center gap-2 bg-[#ff4d00] text-white text-[14px] font-medium px-5 py-2.5 rounded-lg hover:brightness-110 transition-all"
+                        className="inline-flex items-center gap-2 bg-white text-black text-[14px] font-medium px-5 py-2.5 rounded-full hover:bg-zinc-200 transition-colors"
                     >
-                        Start Mining <ArrowRight className="w-4 h-4" />
+                        Get started <ArrowRight className="w-4 h-4" />
                     </Link>
                     <Link
                         href="/docs"
-                        className="inline-flex items-center gap-2 text-[14px] font-medium text-zinc-400 px-5 py-2.5 rounded-lg border border-white/[0.08] hover:text-white hover:border-white/[0.16] transition-all"
+                        className="inline-flex items-center gap-2 text-[14px] font-medium text-zinc-400 px-5 py-2.5 rounded-full border border-white/[0.08] hover:bg-white/[0.04] hover:text-white transition-all"
                     >
-                        Read the docs
+                        Documentation
                     </Link>
-                </motion.div>
-
-                {/* Social proof strip */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                    className="mt-20 flex items-center gap-6 text-[13px] text-zinc-600"
-                >
-                    <span className="flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                        15+ skills shipped
-                    </span>
-                    <span className="w-px h-3 bg-zinc-800"></span>
-                    <span>60+ bounties live</span>
-                    <span className="w-px h-3 bg-zinc-800"></span>
-                    <span>$500+ paid out</span>
                 </motion.div>
             </div>
         </section>

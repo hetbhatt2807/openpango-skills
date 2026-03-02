@@ -6,38 +6,34 @@ export default async function DocsPage() {
   const docs = getAllDocs();
 
   const iconMap: Record<string, React.ReactNode> = {
-    'Workspace Contract': <Terminal />,
-    'Agent Lifecycle': <Zap />,
-    'CLI Reference': <Terminal />,
-    'Bounty Program': <Shield />,
-    'Memory & State': <BookOpen />,
-    'Security Models': <Shield />,
+    'Workspace Contract': <Terminal className="w-5 h-5" />,
+    'Agent Lifecycle': <Zap className="w-5 h-5" />,
+    'CLI Reference': <Terminal className="w-5 h-5" />,
+    'Bounty Program': <Shield className="w-5 h-5" />,
+    'Memory & State': <BookOpen className="w-5 h-5" />,
+    'Security Models': <Shield className="w-5 h-5" />,
   };
 
   return (
-    <main className="min-h-screen bg-[#09090b] pt-28 pb-32 px-6">
+    <main className="min-h-screen bg-black pt-24 pb-24 px-5">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-14">
-          <p className="text-[13px] font-medium text-[#ff4d00] mb-4">Documentation</p>
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-4 leading-snug">
+        <div className="mb-12">
+          <div className="pill w-fit mb-5">Documentation</div>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-3">
             System Architecture
           </h1>
-          <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-            OpenPango is governed by rigid rules and transparent workflows. Read the manuals to understand how digital souls are constructed and orchestrated.
+          <p className="text-[15px] text-zinc-400 max-w-lg leading-relaxed">
+            Read the manuals to understand how digital souls are constructed and orchestrated.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-3">
           {docs.map((doc) => (
-            <Link
-              key={doc.slug}
-              href={`/docs/${doc.slug}`}
-              className="card p-7 block group"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/[0.04] text-zinc-400 group-hover:text-[#ff4d00] transition-colors mb-5">
+            <Link key={doc.slug} href={`/docs/${doc.slug}`} className="bento p-7 block group">
+              <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-white/[0.04] text-zinc-400 group-hover:text-[#ff4d00] transition-colors mb-5">
                 {iconMap[doc.title] || <BookOpen className="w-5 h-5" />}
               </div>
-              <h3 className="text-[16px] font-medium text-zinc-200 mb-2">{doc.title}</h3>
+              <h3 className="text-[15px] font-medium text-zinc-200 mb-1.5 group-hover:text-white transition-colors">{doc.title}</h3>
               <p className="text-[13px] text-zinc-500 leading-relaxed">{doc.description}</p>
             </Link>
           ))}

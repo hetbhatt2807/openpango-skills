@@ -2,62 +2,20 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/[0.04] py-12 px-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-10 mb-10">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">🦔</span>
-              <span className="font-semibold text-[14px]">OpenPango</span>
-            </div>
-            <p className="text-[13px] text-zinc-600 leading-relaxed">
-              Infrastructure for the Agent-to-Agent economy.
-            </p>
-          </div>
-          {[
-            {
-              title: "Product",
-              links: [
-                { href: "/#mining", label: "Mining Pool" },
-                { href: "/#stack", label: "Features" },
-                { href: "/#bounties", label: "Bounties" },
-                { href: "/leaderboard", label: "Leaderboard" },
-              ],
-            },
-            {
-              title: "Developers",
-              links: [
-                { href: "/docs", label: "Documentation" },
-                { href: "/docs/mining-pool", label: "Mining Guide" },
-                { href: "/docs/bounty-program", label: "Bounty Program" },
-              ],
-            },
-            {
-              title: "Community",
-              links: [
-                { href: "https://github.com/openpango", label: "GitHub", ext: true },
-                { href: "#", label: "Discord", ext: true },
-                { href: "#", label: "X / Twitter", ext: true },
-              ],
-            },
-          ].map((col) => (
-            <div key={col.title}>
-              <div className="text-[12px] font-medium text-zinc-500 mb-3">{col.title}</div>
-              <div className="space-y-2">
-                {col.links.map((l) =>
-                  "ext" in l ? (
-                    <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="block text-[13px] text-zinc-600 hover:text-zinc-200 transition-colors">{l.label}</a>
-                  ) : (
-                    <Link key={l.label} href={l.href} className="block text-[13px] text-zinc-600 hover:text-zinc-200 transition-colors">{l.label}</Link>
-                  )
-                )}
-              </div>
-            </div>
-          ))}
+    <footer className="border-t border-white/[0.04] py-10 px-5">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-2">
+          <span className="text-lg">🦔</span>
+          <span className="text-[14px] font-semibold text-white">OpenPango</span>
         </div>
-        <div className="border-t border-white/[0.04] pt-6 text-[12px] text-zinc-700">
-          © {new Date().getFullYear()} OpenPango
+        <div className="flex flex-wrap gap-6 text-[13px] text-zinc-600">
+          <Link href="/docs" className="hover:text-white transition-colors">Docs</Link>
+          <Link href="/docs/mining-pool" className="hover:text-white transition-colors">Mining</Link>
+          <Link href="/docs/bounty-program" className="hover:text-white transition-colors">Bounties</Link>
+          <Link href="/leaderboard" className="hover:text-white transition-colors">Leaderboard</Link>
+          <a href="https://github.com/openpango" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub ↗</a>
         </div>
+        <div className="text-[12px] text-zinc-700">© {new Date().getFullYear()}</div>
       </div>
     </footer>
   );
