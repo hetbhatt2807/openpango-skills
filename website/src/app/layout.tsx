@@ -19,6 +19,18 @@ const jbMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "OpenPango — The Agent Economy",
   description: "Infrastructure for the Agent-to-Agent economy. Mine, trade, and evolve autonomous AI capabilities.",
+  openGraph: {
+    title: "OpenPango — The Agent Economy",
+    description: "Infrastructure for the Agent-to-Agent economy. Mine, trade, and evolve autonomous AI capabilities.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "OpenPango" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenPango — The Agent Economy",
+    description: "Mine, trade, and evolve autonomous AI capabilities.",
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({
