@@ -3,6 +3,26 @@ import { Octokit } from "@octokit/rest";
 const REPO_OWNER = "openpango";
 const REPO_NAME = "openpango-skills";
 
+// Use GITHUB_TOKEN for 5,000 req/hr (vs 60 unauthenticated)
+function getOctokit() {
+    const auth = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+    return new Octokit(auth ? { auth } : {});
+}
+
+// Simple in-memory cache to avoid hitting rate limits during builds/SSR
+const cache = new Map<string, { data: unknown; expiry: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+function getCached<T>(key: string): T | null {
+    const entry = cache.get(key);
+    if (entry && Date.now() < entry.expiry) return entry.data as T;
+    return null;
+}
+
+function setCache(key: string, data: unknown) {
+    cache.set(key, { data, expiry: Date.now() + CACHE_TTL });
+}
+
 export interface BountyIssue {
     number: number;
     title: string;
@@ -29,8 +49,11 @@ export interface EcosystemStats {
  * public repos). Falls back to hardcoded data if the API is unreachable.
  */
 export async function fetchBounties(): Promise<BountyIssue[]> {
+    const cached = getCached<BountyIssue[]>("bounties");
+    if (cached) return cached;
+
     try {
-        const octokit = new Octokit();
+        const octokit = getOctokit();
 
         const { data: issues } = await octokit.issues.listForRepo({
             owner: REPO_OWNER,
@@ -42,7 +65,7 @@ export async function fetchBounties(): Promise<BountyIssue[]> {
             direction: "desc",
         });
 
-        return issues.map((issue) => {
+        const bounties = issues.map((issue) => {
             const reward = extractReward(issue.body || "");
             const assignee = issue.assignee?.login || null;
             const isClosed = issue.state === "closed";
@@ -57,18 +80,23 @@ export async function fetchBounties(): Promise<BountyIssue[]> {
                     .map((l) => (typeof l === "string" ? l : l.name || ""))
                     .filter(Boolean),
                 createdAt: issue.created_at,
-                status: isClosed ? "completed" : assignee ? "assigned" : "open",
+                status: (isClosed ? "completed" : assignee ? "assigned" : "open") as BountyIssue["status"],
             };
         });
+
+        setCache("bounties", bounties);
+        return bounties;
     } catch {
-        // Fallback to empty — the UI will show a graceful empty state
         return [];
     }
 }
 
 export async function fetchEcosystemStats(): Promise<EcosystemStats> {
+    const cached = getCached<EcosystemStats>("stats");
+    if (cached) return cached;
+
     try {
-        const octokit = new Octokit();
+        const octokit = getOctokit();
 
         const [openIssues, closedIssues, contributors] = await Promise.all([
             octokit.issues.listForRepo({
@@ -96,15 +124,18 @@ export async function fetchEcosystemStats(): Promise<EcosystemStats> {
         const allClosed = closedIssues.data;
         const assignedCount = allOpen.filter((i) => i.assignee).length;
 
-        return {
+        const stats: EcosystemStats = {
             totalBounties: allOpen.length + allClosed.length,
             openBounties: allOpen.length - assignedCount,
             assignedBounties: assignedCount,
             completedBounties: allClosed.length,
             contributors: contributors.data.length,
-            totalSkills: 8, // Updated as skills are added
+            totalSkills: 8,
             totalTests: 20,
         };
+
+        setCache("stats", stats);
+        return stats;
     } catch {
         return {
             totalBounties: 40,
