@@ -34,18 +34,18 @@ const PENDING_ACTIONS = [
 
 export default function OperatorDashboard() {
     return (
-        <main className="min-h-screen relative overflow-hidden bg-black pt-32 pb-32 px-6">
+        <main className="min-h-screen relative overflow-hidden bg-black pt-24 pb-32 px-6">
             <div className=""></div>
             <div className=""></div>
-            <div className="radial-gradient"></div>
+            <div className=""></div>
 
             <div className="max-w-6xl mx-auto relative z-10">
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                     <div>
-                        <div className="font-mono text-[#ff3e00] text-sm tracking-widest border border-[#ff3e00]/30 bg-[#ff3e00]/5 px-4 py-1.5 inline-flex items-center gap-2 mb-6 uppercase">
+                        <div className="pill mb-5">
                             <ShieldAlert size={16} /> HITL COMMAND CENTER
                         </div>
-                        <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-none mb-4">
+                        <h1 className="text-3xl md:text-4xl font-semibold tracking-tight leading-none mb-4">
                             Operator <br /> <span className="text-zinc-500">Dashboard</span>
                         </h1>
                         <p className="text-xl text-zinc-400 max-w-xl">

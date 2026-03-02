@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Activity, Cpu } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Activity, Cpu, X } from "lucide-react";
 
 interface Agent {
   id: string;
@@ -26,14 +25,14 @@ export default function AgentsPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAgents((prev) => 
+      setAgents((prev) =>
         prev.map((agent) => ({
           ...agent,
-          load: agent.status === "RUNNING" 
-            ? Math.floor(Math.random() * 40) + 40 
+          load: agent.status === "RUNNING"
+            ? Math.floor(Math.random() * 40) + 40
             : agent.status === "WAITING"
-            ? Math.floor(Math.random() * 10) + 5
-            : 0
+              ? Math.floor(Math.random() * 10) + 5
+              : 0
         }))
       );
     }, 3000);
@@ -41,30 +40,22 @@ export default function AgentsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen relative overflow-hidden bg-black pt-40 pb-32 px-6">
-      <div className=""></div>
-      
-      <div className="max-w-6xl mx-auto relative z-10">
-        <div className="flex justify-end items-center mb-16">
-          <div className="font-mono text-green-400 text-xs tracking-widest border border-green-400/30 bg-green-400/5 px-3 py-1 uppercase flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-            Live Network
+    <main className="min-h-screen bg-black pt-24 pb-24 px-5">
+      <div className="max-w-5xl mx-auto">
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <div className="pill w-fit mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              Live Network
+            </div>
+            <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white mb-3">
+              Active Souls
+            </h1>
+            <p className="text-[15px] text-zinc-400">Real-time agent telemetry</p>
           </div>
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
-        >
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">
-            Active <span className="text-[#ff3e00]">Souls</span>
-          </h1>
-          <p className="text-xl text-zinc-400 font-mono tracking-widest">REAL-TIME TELEMETRY</p>
-        </motion.div>
-
-        <div className="space-y-4 font-mono text-sm">
+        <div className="grid gap-3">
           <AnimatePresence mode="popLayout">
             {agents.map((agent) => (
               <motion.div
@@ -74,59 +65,51 @@ export default function AgentsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
-                className="flex flex-col md:flex-row items-start md:items-center justify-between p-6 border border-white/10 bg-zinc-950/50 hover:border-[#ff3e00]/50 transition-colors gap-6"
+                className="bento p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 cursor-pointer"
+                onClick={() => setSelectedAgent(agent)}
               >
-                <div className="flex items-center gap-6">
-                  <div className="p-3 bg-white/5 text-zinc-300">
-                    <Activity className="w-5 h-5" />
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center text-zinc-400">
+                    <Activity className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-white font-bold text-lg">{agent.role}</div>
-                    <div className="text-zinc-500 text-xs">UUID: {agent.id}</div>
+                    <div className="text-[14px] font-medium text-white">{agent.role}</div>
+                    <div className="text-[11px] text-zinc-600 font-mono">{agent.id}</div>
                   </div>
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-6 md:gap-12 w-full md:w-auto">
+
+                <div className="flex flex-wrap items-center gap-6 md:gap-8">
                   <div className="w-24">
-                    <div className="text-zinc-600 text-xs mb-1 uppercase tracking-widest">LOAD</div>
+                    <div className="text-[11px] text-zinc-600 mb-1">Load</div>
                     <div className="flex items-center gap-2">
                       <div className="flex-grow bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                        <motion.div 
+                        <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${agent.load}%` }}
-                          className={`h-full ${agent.load > 70 ? 'bg-red-500' : 'bg-[#ff3e00]'}`}
+                          className={`h-full rounded-full ${agent.load > 70 ? 'bg-red-500' : 'bg-[#ff4d00]'}`}
                         />
                       </div>
-                      <span className="text-xs text-zinc-400 w-8">{agent.load}%</span>
+                      <span className="text-[11px] text-zinc-500 w-7">{agent.load}%</span>
                     </div>
                   </div>
                   <div>
-                    <div className="text-zinc-600 text-xs mb-1">COMPUTE</div>
-                    <div className="text-zinc-300 flex items-center gap-2">
-                      <Cpu className="w-4 h-4 text-zinc-500" /> {agent.compute}
+                    <div className="text-[11px] text-zinc-600 mb-1">Compute</div>
+                    <div className="text-[13px] text-zinc-300 flex items-center gap-1.5">
+                      <Cpu className="w-3 h-3 text-zinc-600" /> {agent.compute}
                     </div>
                   </div>
                   <div>
-                    <div className="text-zinc-600 text-xs mb-1">MEMORY</div>
-                    <div className="text-zinc-300">{agent.memory}</div>
+                    <div className="text-[11px] text-zinc-600 mb-1">Memory</div>
+                    <div className="text-[13px] text-zinc-300">{agent.memory}</div>
                   </div>
                   <div>
-                    <div className="text-zinc-600 text-xs mb-1">STATUS</div>
-                    <div className={`px-2 py-1 text-xs border ${
-                      agent.status === "RUNNING" ? "border-green-400 text-green-400 bg-green-400/10" :
-                      agent.status === "IDLE" ? "border-zinc-500 text-zinc-400 bg-zinc-500/10" :
-                      "border-yellow-400 text-yellow-400 bg-yellow-400/10"
-                    }`}>
+                    <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${agent.status === "RUNNING" ? "bg-emerald-500/10 text-emerald-400" :
+                        agent.status === "IDLE" ? "bg-zinc-500/10 text-zinc-500" :
+                          "bg-amber-400/10 text-amber-400"
+                      }`}>
                       {agent.status}
-                    </div>
+                    </span>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setSelectedAgent(agent)}
-                  >
-                    Inspect
-                  </Button>
                 </div>
               </motion.div>
             ))}
@@ -137,61 +120,50 @@ export default function AgentsPage() {
         <AnimatePresence>
           {selectedAgent && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedAgent(null)}
                 className="absolute inset-0 bg-black/80 backdrop-blur-md"
               />
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-2xl bg-zinc-900 border border-white/10 rounded-xl overflow-hidden shadow-2xl"
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative w-full max-w-lg bento p-0 overflow-hidden"
               >
-                <div className="bg-zinc-950 px-6 py-4 border-b border-white/10 flex justify-between items-center">
-                  <h3 className="font-mono text-sm font-bold uppercase tracking-widest text-[#ff3e00]">
-                    Agent Inspection // {selectedAgent.role}
+                <div className="px-6 py-4 border-b border-white/[0.06] flex justify-between items-center">
+                  <h3 className="text-[14px] font-medium text-white">
+                    {selectedAgent.role} · <span className="text-zinc-500 font-mono text-[12px]">{selectedAgent.id}</span>
                   </h3>
-                  <button 
-                    onClick={() => setSelectedAgent(null)}
-                    className="text-zinc-500 hover:text-white transition-colors"
-                  >
-                    [CLOSE]
+                  <button onClick={() => setSelectedAgent(null)} className="text-zinc-600 hover:text-white transition-colors">
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
-                <div className="p-8 font-mono text-sm space-y-6">
-                  <div className="grid grid-cols-2 gap-8">
+                <div className="p-6 space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-zinc-500 mb-2 uppercase text-xs tracking-tighter">Identity Profile</div>
-                      <div className="space-y-1">
-                        <div className="text-zinc-300">NAME: <span className="text-white">{selectedAgent.role} Agent</span></div>
-                        <div className="text-zinc-300">UUID: <span className="text-white">{selectedAgent.id}</span></div>
-                        <div className="text-zinc-300">TYPE: <span className="text-white">Autonomous Sub-Agent</span></div>
+                      <div className="text-[11px] text-zinc-600 mb-2">Identity</div>
+                      <div className="space-y-1 text-[13px]">
+                        <div className="text-zinc-400">Name: <span className="text-white">{selectedAgent.role} Agent</span></div>
+                        <div className="text-zinc-400">Type: <span className="text-white">Autonomous</span></div>
                       </div>
                     </div>
                     <div>
-                      <div className="text-zinc-500 mb-2 uppercase text-xs tracking-tighter">System Resources</div>
-                      <div className="space-y-1">
-                        <div className="text-zinc-300">COMPUTE: <span className="text-white">{selectedAgent.compute}</span></div>
-                        <div className="text-zinc-300">MEMORY: <span className="text-white">{selectedAgent.memory}</span></div>
-                        <div className="text-zinc-300">LOAD: <span className="text-white">{selectedAgent.load}%</span></div>
+                      <div className="text-[11px] text-zinc-600 mb-2">Resources</div>
+                      <div className="space-y-1 text-[13px]">
+                        <div className="text-zinc-400">Compute: <span className="text-white">{selectedAgent.compute}</span></div>
+                        <div className="text-zinc-400">Memory: <span className="text-white">{selectedAgent.memory}</span></div>
+                        <div className="text-zinc-400">Load: <span className="text-white">{selectedAgent.load}%</span></div>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="pt-6 border-t border-white/5">
-                    <div className="text-zinc-500 mb-4 uppercase text-xs tracking-tighter">Active Contract (SOUL.md)</div>
-                    <div className="bg-black/40 p-4 border border-white/5 rounded text-zinc-400 leading-relaxed italic">
-                      &quot;Strict adherence to the workspace protocol is mandatory. No execution outside sandbox boundaries. Communication must remain technical and concise.&quot;
+                  <div className="border-t border-white/[0.06] pt-5">
+                    <div className="text-[11px] text-zinc-600 mb-3">Active Contract (SOUL.md)</div>
+                    <div className="bg-black/40 p-4 rounded-xl text-[13px] text-zinc-400 italic leading-relaxed">
+                      &quot;Strict adherence to the workspace protocol is mandatory. No execution outside sandbox boundaries.&quot;
                     </div>
-                  </div>
-
-                  <div className="flex justify-end pt-4">
-                    <Button variant="primary" onClick={() => setSelectedAgent(null)}>
-                      Acknowledge
-                    </Button>
                   </div>
                 </div>
               </motion.div>

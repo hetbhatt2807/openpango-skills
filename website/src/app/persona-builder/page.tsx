@@ -85,11 +85,11 @@ export default function PersonaBuilderPage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100 px-6 py-12">
+    <main className="min-h-screen bg-black text-zinc-100 px-5 pt-24 pb-24">
       <div className="max-w-6xl mx-auto space-y-8">
         <header className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#ff3e00]">Persona Builder</p>
-          <h1 className="text-4xl font-black tracking-tight">Agent Personality & SOUL Composer</h1>
+          <p className="pill w-fit mb-5">Persona Builder</p>
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">Agent Personality & SOUL Composer</h1>
           <p className="text-zinc-400 max-w-3xl">
             Build a portable agent persona from structured fields. The output is safely normalized,
             transformed to SOUL markdown, and exportable as JSON/YAML.
@@ -97,7 +97,7 @@ export default function PersonaBuilderPage() {
         </header>
 
         <section className="grid lg:grid-cols-2 gap-6">
-          <div className="space-y-5 rounded-xl border border-white/10 bg-zinc-900/50 p-6">
+          <div className="space-y-5 bento p-6">
             <div className="space-y-2">
               <label className="text-sm font-semibold">Core Identity</label>
               <textarea
@@ -149,7 +149,7 @@ export default function PersonaBuilderPage() {
             </div>
           </div>
 
-          <div className="space-y-5 rounded-xl border border-white/10 bg-zinc-900/50 p-6">
+          <div className="space-y-5 bento p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">Generated SOUL.md</h2>
               <div className="flex gap-2">
