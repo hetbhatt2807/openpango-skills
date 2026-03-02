@@ -1,0 +1,11 @@
+venv/
+node_modules/
+__pycache__/
+.browser_data/
+.browser_data_test/
+.beads_data/
+.DS_Store
+*.pyc
+orchestration/outputs/
+skills/orchestration/outputs/*.txt
+skills/orchestration/openclaw_mock_storage.json

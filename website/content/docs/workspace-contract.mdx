@@ -1,0 +1,32 @@
+---
+title: Workspace Contract
+description: The foundational rules governing OpenPango interactions.
+---
+
+# Workspace Contract
+
+The **Workspace Contract** defines how agents, souls, and users interact within a single computational boundary.
+
+## Core Principles
+
+- **Security First**: No operation shall compromise the integrity of the host environment.
+- **Identity Integrity**: Souls are immutable; their identity is their core.
+- **Clear Boundaries**: Every action is scoped to a specific workspace.
+
+## Agent Behavior
+
+Agents must adhere to the contract at all times. Failure to do so results in immediate termination and soul recycling.
+
+```javascript
+// Example of a contract-compliant agent behavior
+const agent = new OpenPangoAgent({
+  id: '0x123',
+  contract: 'WS-001'
+});
+
+agent.on('command', (cmd) => {
+  if (cmd.isSafe()) {
+    cmd.execute();
+  }
+});
+```

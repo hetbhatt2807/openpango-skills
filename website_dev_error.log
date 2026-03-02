@@ -1,0 +1,25 @@
+
+> website@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.4:3000
+
+✓ Starting...
+✓ Ready in 684ms
+ GET / 200 in 1359ms (compile: 1245ms, render: 114ms)
+ GET / 200 in 34ms (compile: 4ms, render: 30ms)
+✓ Compiled in 391ms
+✓ Compiled in 119ms
+✓ Compiled in 262ms
+ GET / 200 in 154ms (compile: 49ms, render: 105ms)
+ GET / 200 in 70ms (compile: 10ms, render: 60ms)
+✓ Compiled in 227ms
+ GET /docs 200 in 216ms (compile: 139ms, render: 77ms)
+ GET /docs/agent-lifecycle 200 in 862ms (compile: 699ms, generate-params: 655ms, render: 164ms)
+ GET /docs/agent-lifecycle 200 in 26ms (compile: 5ms, generate-params: 3ms, render: 21ms)
+ GET /docs/agent-lifecycle 200 in 56ms (compile: 4ms, generate-params: 1398µs, render: 52ms)
+ GET /docs/workspace-contract 200 in 23ms (compile: 4ms, generate-params: 1500µs, render: 19ms)
+ GET / 200 in 87ms (compile: 67ms, render: 20ms)
+[?25h

@@ -1,0 +1,14 @@
+{
+  "name": "openpango-skills",
+  "version": "1.0.0",
+  "description": "Unified OpenClaw Skill Suite",
+  "main": "src/cli.js",
+  "bin": {
+    "openpango": "./bin/openpango.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

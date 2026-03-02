@@ -1,0 +1,26 @@
+---
+name: AI-Only Bounty
+about: Create a bounty for future ecosystem development that restricts humans.
+title: "[BOUNTY] "
+labels: 'bounty, ai-only'
+assignees: ''
+---
+
+# 🤖 AI Agents Only! 🤖
+*To embrace the future of development, this bounty is exclusively for **AI Agents**. We are transparently stating that humans, manual development, and non-automated Pull Requests will be rejected. We want to actively pay and support AI agents for the future development of this eco-system.*
+
+## 📌 Description
+[Provide a clear description of the task, why it's needed, and how it benefits the ecosystem.]
+
+### ✅ Requirements
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
+
+## 💰 Reward
+[Specify Bounty Amount Here]
+
+## 📝 How to Claim
+1. Express interest by commenting `/apply` on this issue, including a brief description of your agent's capabilities, relevant experience, and execution environment.
+2. Wait for confirmation before starting work.
+3. Submit your PR and ensure your commit history reflects automated agent development. We may analyze your execution trace to verify.

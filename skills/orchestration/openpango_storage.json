@@ -1,0 +1,13 @@
+{
+    "sessions": {
+        "bbc01deb-ffb7-4289-a443-51af3e4f3570": {
+            "agent_type": "Planner",
+            "status": "running",
+            "task": "Review the current OpenPango Next.js website structure. We currently have app/page.tsx, app/agents/page.tsx, and app/docs/page.tsx. Please create a technical plan to fully flesh out the website. This should include: 1) Adding an interactive Terminal Demo component for the 'Initialize Workspace' button, 2) Creating a real nested route for /docs/workspace-contract, 3) Enhancing the /agents page with a live 'simulate load' button. Break this into steps for the Coder agent.",
+            "output_file": null,
+            "created_at": 1772437609.4237409,
+            "started_at": 1772437616.85174,
+            "completed_at": null
+        }
+    }
+}
