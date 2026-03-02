@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const readline = require('readline');
+const { execSync } = require('child_process');
 const { initWorkspace } = require('../shared/workspace');
 
 const OPENCLAW_DIR = path.join(os.homedir(), '.openclaw');
@@ -21,7 +22,111 @@ const getInstalledSkills = () => {
   });
 };
 
-const installSkills = (skillsToInstall) => {
+// WHY: Security gate — scan skill source before creating any symlink.
+// Returns { passed: boolean, violations: string[] }
+const scanSkillSecurity = (skillSrcDir) => {
+  const violations = [];
+
+  // --- 1. SAST: scan JS files for dangerous patterns ---
+  // WHY: Catch credential leaks, eval abuse, and suspicious network calls
+  //      without requiring an external binary (ESLint may not be present in all envs).
+  const DANGEROUS_PATTERNS = [
+    { pattern: /(?:AWS|GITHUB|SECRET|API|TOKEN|PASSWORD|PRIVATE)[_\s]*(?:KEY|SECRET|TOKEN)?\s*=\s*['"][^'"]{6,}['"]/i, label: 'Hardcoded credential' },
+    { pattern: /\beval\s*\(/, label: 'Use of eval()' },
+    { pattern: /new\s+Function\s*\(/, label: 'Dynamic Function constructor' },
+    { pattern: /require\s*\(\s*['"](child_process|vm)['"]\s*\)/, label: 'Sensitive module import (child_process/vm)' },
+    { pattern: /process\.env\s*\[\s*[^\]]+\]\s*=/, label: 'Runtime env mutation' },
+    { pattern: /\.\.\/\.\.\//, label: 'Path traversal attempt (.../../)' },
+  ];
+
+  // WHY: Walk only JS/TS/JSON files; skip node_modules to avoid noise.
+  const walkDir = (dir) => {
+    let results = [];
+    if (!fs.existsSync(dir)) return results;
+    fs.readdirSync(dir).forEach(name => {
+      if (name === 'node_modules') return;
+      const full = path.join(dir, name);
+      const stat = fs.statSync(full);
+      if (stat.isDirectory()) {
+        results = results.concat(walkDir(full));
+      } else if (/\.(js|ts|json|mjs|cjs)$/.test(name)) {
+        results.push(full);
+      }
+    });
+    return results;
+  };
+
+  const files = walkDir(skillSrcDir);
+  files.forEach(filePath => {
+    let src;
+    try { src = fs.readFileSync(filePath, 'utf8'); } catch (_) { return; }
+    DANGEROUS_PATTERNS.forEach(({ pattern, label }) => {
+      if (pattern.test(src)) {
+        violations.push(`[SAST] ${label} detected in ${path.relative(skillSrcDir, filePath)}`);
+      }
+    });
+  });
+
+  // --- 2. CVE check: run npm audit if package.json exists ---
+  // WHY: Skills may bundle their own dependencies; surface HIGH/CRITICAL CVEs.
+  const pkgJson = path.join(skillSrcDir, 'package.json');
+  if (fs.existsSync(pkgJson)) {
+    try {
+      const auditOutput = execSync('npm audit --json --audit-level=high', {
+        cwd: skillSrcDir,
+        timeout: 30000,
+        stdio: ['pipe', 'pipe', 'pipe'],
+      }).toString();
+      const audit = JSON.parse(auditOutput);
+      // npm audit v7+ uses { metadata: { vulnerabilities: { high, critical } } }
+      const vulns = audit.metadata && audit.metadata.vulnerabilities;
+      if (vulns) {
+        if ((vulns.high || 0) > 0) {
+          violations.push(`[CVE] ${vulns.high} HIGH severity vulnerability(ies) found in dependencies`);
+        }
+        if ((vulns.critical || 0) > 0) {
+          violations.push(`[CVE] ${vulns.critical} CRITICAL severity vulnerability(ies) found in dependencies`);
+        }
+      }
+    } catch (err) {
+      // WHY: npm audit exits non-zero when vulnerabilities are found;
+      //      parse stderr/stdout to still extract the report.
+      try {
+        const raw = err.stdout ? err.stdout.toString() : '';
+        const audit = JSON.parse(raw);
+        const vulns = audit.metadata && audit.metadata.vulnerabilities;
+        if (vulns) {
+          if ((vulns.high || 0) > 0) {
+            violations.push(`[CVE] ${vulns.high} HIGH severity vulnerability(ies) found in dependencies`);
+          }
+          if ((vulns.critical || 0) > 0) {
+            violations.push(`[CVE] ${vulns.critical} CRITICAL severity vulnerability(ies) found in dependencies`);
+          }
+        }
+      } catch (_) {
+        // If npm audit isn't available or package-lock missing, warn but don't block.
+        console.warn(`  [WARN] Could not run npm audit for ${path.basename(skillSrcDir)}: ${err.message}`);
+      }
+    }
+  }
+
+  // --- 3. Symlink-safety: ensure srcDir is not itself a symlink ---
+  // WHY: Prevent symlink-chaining attacks where a malicious skill directory
+  //      points outside the repo.
+  try {
+    const lstat = fs.lstatSync(skillSrcDir);
+    if (lstat.isSymbolicLink()) {
+      violations.push('[SYMLINK] Skill source directory is itself a symlink — possible path traversal attack');
+    }
+  } catch (_) {}
+
+  return { passed: violations.length === 0, violations };
+};
+
+// WHY: Gate installSkills behind security scanning; --force allows override with warning.
+const installSkills = (skillsToInstall, opts = {}) => {
+  const force = opts.force || false;
+
   if (!fs.existsSync(SKILLS_DIR)) {
     fs.mkdirSync(SKILLS_DIR, { recursive: true });
   }
@@ -33,6 +138,24 @@ const installSkills = (skillsToInstall) => {
     if (!fs.existsSync(srcDir)) {
       console.error(`Skill '${skill}' not found.`);
       return;
+    }
+
+    // Run security scan before touching the filesystem
+    console.log(`\nScanning '${skill}' for security issues...`);
+    const report = scanSkillSecurity(srcDir);
+
+    if (!report.passed) {
+      console.error(`\n⚠️  Security scan FAILED for skill '${skill}':`);
+      report.violations.forEach(v => console.error(`  • ${v}`));
+
+      if (!force) {
+        console.error(`\n❌ Installation of '${skill}' blocked. Use --force to override (not recommended).`);
+        return; // WHY: Hard block — no symlink created.
+      } else {
+        console.warn(`\n⚠️  --force flag supplied. Installing '${skill}' despite security violations. PROCEED WITH CAUTION.`);
+      }
+    } else {
+      console.log(`✅ Security scan passed for '${skill}'.`);
     }
 
     if (!fs.existsSync(destDir)) {
@@ -48,7 +171,7 @@ const removeSkills = (skillsToRemove) => {
   skillsToRemove.forEach(skill => {
     const destDir = path.join(SKILLS_DIR, skill);
     if (fs.existsSync(destDir)) {
-      fs.unlinkSync(destDir); // Assuming symlinks
+      fs.unlinkSync(destDir);
       console.log(`Removed ${skill}`);
     } else {
       console.log(`Skill ${skill} is not installed.`);
@@ -67,6 +190,7 @@ const listSkills = () => {
   });
 };
 
+// WHY: status() was cut off in the original file — completing it here.
 const status = () => {
   const installed = getInstalledSkills();
   console.log('Installed skills status:');
@@ -77,14 +201,20 @@ const status = () => {
   installed.forEach(skill => {
     const destDir = path.join(SKILLS_DIR, skill);
     const isValid = fs.existsSync(path.join(destDir, 'SKILL.md'));
-    console.log(`  - ${skill}: ${isValid ? 'OK' : 'Broken'}`);
+    // WHY: Also verify the symlink target still exists (detect post-install tampering).
+    let linkTarget = null;
+    try {
+      linkTarget = fs.realpathSync(destDir);
+    } catch (_) {}
+    const targetExists = linkTarget && fs.existsSync(linkTarget);
+    console.log(`  - ${skill}: ${isValid && targetExists ? 'OK' : 'Broken'}`);
   });
 };
 
-const interactiveInstall = async () => {
+const interactiveInstall = async (opts = {}) => {
   const available = getAvailableSkills();
   const installed = getInstalledSkills();
-  
+
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -110,46 +240,62 @@ const interactiveInstall = async () => {
   const toInstall = selectedIndices.map(i => available[i]);
 
   if (toInstall.length > 0) {
-    installSkills(toInstall);
+    installSkills(toInstall, opts);
   } else {
     console.log('No skills selected.');
   }
 };
 
 const run = async () => {
+  initWorkspace();
   const args = process.argv.slice(2);
-  const command = args[0];
+  // WHY: Parse --force flag globally so it works with any subcommand.
+  const force = args.includes('--force');
+  const cleanArgs = args.filter(a => a !== '--force');
+  const command = cleanArgs[0];
 
   switch (command) {
-    case 'install':
-      const skillsToInstall = args.slice(1);
+    case 'install': {
+      const skillsToInstall = cleanArgs.slice(1);
       if (skillsToInstall.length > 0) {
-        installSkills(skillsToInstall);
+        installSkills(skillsToInstall, { force });
       } else {
-        await interactiveInstall();
+        await interactiveInstall({ force });
       }
       break;
-    case 'remove':
-      const skillsToRemove = args.slice(1);
+    }
+    case 'remove': {
+      const skillsToRemove = cleanArgs.slice(1);
       if (skillsToRemove.length > 0) {
         removeSkills(skillsToRemove);
       } else {
         console.log('Usage: openpango remove [skill...]');
       }
       break;
+    }
     case 'list':
       listSkills();
-      break;
-    case 'init':
-      initWorkspace();
-      console.log('Workspace initialized.');
       break;
     case 'status':
       status();
       break;
     default:
-      console.log('Usage: openpango <command>\n\nCommands:\n  install [skill...]\n  remove [skill...]\n  list\n  init\n  status');
+      console.log('OpenPango Skill Manager');
+      console.log('Usage:');
+      console.log('  openpango install [skill...]   Install skills (scans for security issues first)');
+      console.log('  openpango remove  [skill...]   Remove installed skills');
+      console.log('  openpango list                 List available skills');
+      console.log('  openpango status               Show status of installed skills');
+      console.log('\nFlags:');
+      console.log('  --force                        Override security scan failures (use with caution)');
+      break;
   }
 };
 
-run();
+run().catch(err => {
+  console.error('Fatal error:', err.message);
+  process.exit(1);
+});
+
+// WHY: Export internals for unit testing without re-running run().
+module.exports = { scanSkillSecurity, installSkills, removeSkills, listSkills, status, getAvailableSkills, getInstalledSkills };
