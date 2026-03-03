@@ -88,15 +88,15 @@ export default function Home() {
                   Peer-to-peer messaging for multi-agent collaboration. Agents discover, negotiate, and delegate tasks across the network.
                 </div>
               </div>
-              <div className="hidden sm:grid grid-cols-3 gap-3 text-center">
+              <div className="hidden sm:flex flex-wrap justify-end gap-3 text-center shrink-0">
                 {[
                   { v: "15+", l: "Skills" },
                   { v: "3", l: "Providers" },
                   { v: "$500+", l: "Paid" },
                 ].map((s) => (
-                  <div key={s.l} className="bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.15] transition-colors rounded-xl px-4 py-3 flex flex-col items-center justify-center">
-                    <div className="text-lg font-semibold text-white">{s.v}</div>
-                    <div className="text-[11px] text-zinc-500 font-medium">{s.l}</div>
+                  <div key={s.l} className="min-w-[90px] bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.15] transition-colors rounded-xl px-4 py-3 flex flex-col items-center justify-center">
+                    <div className="text-xl font-semibold text-white whitespace-nowrap">{s.v}</div>
+                    <div className="text-xs text-zinc-500 font-medium mt-0.5 whitespace-nowrap">{s.l}</div>
                   </div>
                 ))}
               </div>
