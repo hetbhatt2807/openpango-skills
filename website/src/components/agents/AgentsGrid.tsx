@@ -121,9 +121,7 @@ function ContributorCard({ c }: { c: Contributor }) {
             </Link>
             <div className="text-[11px] text-zinc-600 mt-1">
               {c.contributions} commit{c.contributions !== 1 ? "s" : ""}
-              {c.lastActiveAt && (
-                <> · {timeAgo(c.lastActiveAt)}</>
-              )}
+              {c.lastActiveAt && <> · {timeAgo(c.lastActiveAt)}</>}
             </div>
           </div>
         </div>
@@ -225,9 +223,7 @@ function ContributorCard({ c }: { c: Contributor }) {
                 <span className="text-[12px] text-zinc-500 group-hover/pr:text-zinc-300 transition-colors line-clamp-1 flex-1">
                   {pr.title}
                 </span>
-                <span className="text-[10px] text-zinc-700 shrink-0">
-                  #{pr.number}
-                </span>
+                <span className="text-[10px] text-zinc-700 shrink-0">#{pr.number}</span>
               </a>
             ))}
           </div>
@@ -256,9 +252,7 @@ function SkillCard({ skill }: { skill: SkillEntry }) {
       </div>
       <div>
         <div className="text-[13px] font-medium text-white">{skill.name}</div>
-        <div className="text-[11px] text-zinc-600 mt-0.5 line-clamp-2">
-          {skill.description}
-        </div>
+        <div className="text-[11px] text-zinc-600 mt-0.5 line-clamp-2">{skill.description}</div>
       </div>
     </div>
   );
@@ -269,16 +263,12 @@ function SkillCard({ skill }: { skill: SkillEntry }) {
 function SummaryBar({ contributors }: { contributors: Contributor[] }) {
   const active = contributors.filter((c) => c.activityStatus === "ACTIVE").length;
   const idle = contributors.filter((c) => c.activityStatus === "IDLE").length;
-  const total = contributors.length;
-  const totalCompleted = contributors.reduce(
-    (n, c) => n + c.completedBounties.length,
-    0
-  );
+  const totalCompleted = contributors.reduce((n, c) => n + c.completedBounties.length, 0);
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
       {[
-        { label: "Total Contributors", value: total, color: "text-white" },
+        { label: "Total Contributors", value: contributors.length, color: "text-white" },
         { label: "Active Now", value: active, color: "text-emerald-400" },
         { label: "Idle", value: idle, color: "text-amber-400" },
         { label: "Bounties Completed", value: totalCompleted, color: "text-[#ff4d00]" },
@@ -314,17 +304,14 @@ export async function AgentsGrid() {
 
   return (
     <div>
-      {/* Summary stats */}
       <SummaryBar contributors={contributors} />
 
-      {/* Contributors grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
         {contributors.map((c) => (
           <ContributorCard key={c.login} c={c} />
         ))}
       </div>
 
-      {/* Skill map */}
       {skills.length > 0 && (
         <div>
           <div className="flex items-center gap-3 mb-6">
@@ -341,47 +328,6 @@ export async function AgentsGrid() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-// ── Loading skeleton ──────────────────────────────────────────────────────────
-
-export function AgentsGridSkeleton() {
-  return (
-    <div>
-      {/* Stats skeleton */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bento p-4 animate-pulse">
-            <div className="h-8 w-12 bg-white/[0.04] rounded mx-auto mb-2" />
-            <div className="h-3 w-20 bg-white/[0.04] rounded mx-auto" />
-          </div>
-        ))}
-      </div>
-      {/* Cards skeleton */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bento p-5 animate-pulse">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-white/[0.04]" />
-              <div className="flex-1">
-                <div className="h-3.5 w-24 bg-white/[0.04] rounded mb-2" />
-                <div className="h-2.5 w-16 bg-white/[0.04] rounded" />
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              {Array.from({ length: 3 }).map((_, j) => (
-                <div key={j} className="h-12 bg-white/[0.04] rounded-lg" />
-              ))}
-            </div>
-            <div className="space-y-2">
-              <div className="h-2 w-20 bg-white/[0.04] rounded" />
-              <div className="h-8 bg-white/[0.04] rounded-lg" />
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
