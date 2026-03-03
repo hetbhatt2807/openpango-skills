@@ -428,6 +428,103 @@ const status = () => {
   console.log('');
 };
 
+const health = () => {
+  console.log('');
+  console.log(c.bold('  ╔══════════════════════════════════════════╗'));
+  console.log(c.bold('  ║     🦔 OpenPango Health Diagnostics      ║'));
+  console.log(c.bold('  ╚══════════════════════════════════════════╝'));
+  console.log('');
+
+  // --- 1. Workspace Structure ---
+  console.log(c.bold(c.cyan('  ┌─ Workspace')));
+  const wsResults = checkWorkspace();
+  wsResults.forEach(r => {
+    const icon = r.ok ? (r.warn ? WARN : OK) : FAIL;
+    console.log(`  │  ${icon} ${r.msg}`);
+  });
+  console.log(c.dim('  │'));
+
+  // --- 2. Database Connectivity ---
+  console.log(c.bold(c.cyan('  ├─ Database')));
+  const dbPath = path.join(OPENCLAW_DIR, 'mining_pool.db');
+  let dbOk = false;
+  try {
+    if (fs.existsSync(dbPath)) {
+      // Basic sqlite3 connection test
+      execSync(`sqlite3 "${dbPath}" "SELECT count(*) FROM sqlite_master;"`, { stdio: 'pipe' });
+      console.log(`  │  ${OK} SQLite connection successful (${path.basename(dbPath)})`);
+      dbOk = true;
+    } else {
+      console.log(`  │  ${WARN} Database not found at ${dbPath}`);
+    }
+  } catch (err) {
+    console.log(`  │  ${FAIL} Database query failed: ${err.message.split('\n')[0]}`);
+  }
+  console.log(c.dim('  │'));
+
+  // --- 3. Test Suites ---
+  console.log(c.bold(c.cyan('  ├─ Python Tests')));
+  let testsOk = false;
+  try {
+    const rootDir = path.join(__dirname, '..');
+    // Using simple count check or run the main module
+    // We'll just check if the test suite command can be found/executed
+    execSync('python3 -c "import unittest" 2>/dev/null', { stdio: 'pipe' });
+    console.log(`  │  ${OK} Python unittest module available`);
+
+    // We could run `python3 -m unittest discover` here, but it's slow.
+    // Let's just verify the python environment has what we need.
+    const pythonVer = execSync('python3 --version', { stdio: 'pipe' }).toString().trim();
+    console.log(`  │  ${OK} Python environment: ${pythonVer}`);
+    testsOk = true;
+  } catch (err) {
+    console.log(`  │  ${FAIL} Python test environment error: ${err.message}`);
+  }
+  console.log(c.dim('  │'));
+
+  // --- 4. Installed Skills Integrity ---
+  const installed = getInstalledSkills();
+  console.log(c.bold(c.cyan('  ├─ Skills Integrity')));
+
+  let skillsOkCount = 0;
+  if (installed.length === 0) {
+    console.log(`  │  ${WARN} No skills installed.`);
+  } else {
+    installed.forEach(skill => {
+      const destDir = path.join(SKILLS_DIR, skill);
+      const hasSkillMd = fs.existsSync(path.join(destDir, 'SKILL.md'));
+
+      let linkOk = false;
+      try {
+        const target = fs.realpathSync(destDir);
+        linkOk = fs.existsSync(target);
+      } catch (_) { }
+
+      if (hasSkillMd && linkOk) {
+        skillsOkCount++;
+      } else {
+        console.log(`  │  ${FAIL} Skill '${skill}' is broken (missing SKILL.md or invalid symlink)`);
+      }
+    });
+
+    if (skillsOkCount === installed.length) {
+      console.log(`  │  ${OK} All ${installed.length} installed skills are intact`);
+    } else {
+      console.log(`  │  ${WARN} ${installed.length - skillsOkCount} skills have integrity issues`);
+    }
+  }
+
+  console.log(c.dim('  │'));
+
+  // --- 5. Summary ---
+  const wsOk = wsResults.every(r => r.ok);
+  const allOk = wsOk && dbOk && testsOk && (installed.length === 0 || skillsOkCount === installed.length);
+
+  console.log(c.bold(c.cyan('  └─ Overall Diagnostic')));
+  console.log(`     Status: ${allOk ? c.green('HEALTHY') : c.red('DEGRADED')}`);
+  console.log('');
+};
+
 const interactiveInstall = async (opts = {}) => {
   const available = getAvailableSkills();
   const installed = getInstalledSkills();
@@ -494,8 +591,10 @@ const run = async () => {
       listSkills();
       break;
     case 'status':
-    case 'health':
       status();
+      break;
+    case 'health':
+      health();
       break;
     default:
       console.log('OpenPango Skill Manager');
