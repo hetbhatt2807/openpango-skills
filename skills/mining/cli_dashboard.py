@@ -507,8 +507,6 @@ class OpenPangoDashboard(App):
         self._update_status("Dashboard started — auto-refresh every 5s")
         self._timer: Timer = self.set_interval(5, self._auto_refresh)
 
-    # ── helpers ──
-
     def _update_status(self, msg: str) -> None:
         now = datetime.datetime.now().strftime("%H:%M:%S")
         self.query_one("#status-bar", Static).update(f"[{now}] {msg}")
@@ -523,8 +521,6 @@ class OpenPangoDashboard(App):
     def _auto_refresh(self) -> None:
         self._refresh_all()
         self._update_status(f"Auto-refreshed (#{self._refresh_count})")
-
-    # ── actions ──
 
     def action_refresh(self) -> None:
         self._refresh_all()
