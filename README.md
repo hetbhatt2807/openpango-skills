@@ -85,3 +85,8 @@ python3 skills/mining/mining_pool.py earnings --miner-id <your-id>
 
 See [`skills/mining/SKILL.md`](skills/mining/SKILL.md) for full documentation.
 
+
+## Mobile HITL Companion (Bounty #24)
+- React Native Expo app scaffold: mobile/hitl-companion
+- Supports pending approvals view + approve/reject actions against node API.
+

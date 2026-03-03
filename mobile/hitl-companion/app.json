@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "OpenPango HITL Companion",
+    "slug": "openpango-hitl-companion",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": ["**/*"]
+  }
+}
