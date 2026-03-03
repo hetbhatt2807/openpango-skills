@@ -46,7 +46,7 @@ jobs:
 
       - name: Run Python skill tests
         run: |
-          echo "🧪 Running 175 tests across 11 skills..."
+          echo "🧪 Running tests across 13 skills..."
           python3 -m unittest \
             skills.comms.test_messenger \
             skills.data_sandbox.test_sandbox \
@@ -60,6 +60,12 @@ jobs:
             skills.security.test_enclave \
             skills.web3.test_wallet \
             -v
+
+      - name: Run audio skill tests
+        run: python3 skills/audio/test_voice.py
+
+      - name: Run discord/slack skill tests
+        run: python3 skills/discord_slack/test_bot.py
 
   website-build:
     runs-on: ubuntu-latest
